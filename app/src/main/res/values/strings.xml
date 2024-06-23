@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tap &amp; Count</string>
+    <string name="undo_button_text">Undo</string>
+    <string name="back_button_first_tap_message">Please click BACK again to exit</string>
+    <string name="reset_button_text">Reset</string>
+    <string name="history_button_text">History</string>
+    <string name="history_button_description">History</string>
+</resources>
