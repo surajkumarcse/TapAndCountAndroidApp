@@ -1,9 +1,9 @@
 This is an Android app that helps you to count people, objects or activity like exercise reps. 
 In this project, repo owner is planning to integrate all the concepts of Android in a single app, till now it has achieved:
-Compose
-Animation
-MVVM
-Notification
+Compose  
+Animation  
+MVVM  
+Notification  
 
 Ditch the old clicker! Replace your clunky tally counter with this intuitive, modern app designed for easy counting on the go. 
 
