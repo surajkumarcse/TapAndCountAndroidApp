@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Tap & Count"
 include(":app")
+include(":appInfo")
