@@ -1,8 +1,10 @@
 package com.lostfalcon.tapcount
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -50,7 +52,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import com.lostfalcon.appinfo.SettingsUI
+import com.lostfalcon.tapcount.SessionInfo.CentralCountInfo
 import com.lostfalcon.tapcount.SessionInfo.HistoryInfoUnit
+import com.lostfalcon.tapcount.Util.Constants
 import com.lostfalcon.tapcount.ui.theme.TapCountTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,6 +64,7 @@ import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     val viewModel: MainActivityViewModel by viewModels()
+    val LOG_TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,14 +74,46 @@ class MainActivity : ComponentActivity() {
                 TapAndCountHomeScreen(viewModel)
             }
         }
+
+        viewModel.doNotify(this)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d(LOG_TAG, "$intent")
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        intent?.let {
+            when(it.getStringExtra(Constants.NOTIFICATION_TYPE)) {
+                Constants.NOTIFICATION_TAP_ACTION -> {
+                    viewModel.incrementCount(this)
+                }
+                Constants.NOTIFICATION_UNDO_ACTION -> {
+                    viewModel.decrementCount(this)
+                }
+                else -> {
+                    Log.e(LOG_TAG, "Unknown Notification Type received : ${it.getStringExtra(Constants.NOTIFICATION_TYPE)}")
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.d(LOG_TAG, "requestCode: $requestCode, resultCode: $resultCode, data: $data")
     }
 
     override fun onPause() {
+        Log.d(LOG_TAG, "onPause")
         viewModel.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
+        Log.d(LOG_TAG, "onDestroy")
         super.onDestroy()
     }
 
@@ -175,9 +213,10 @@ fun TapAndCountHomeScreen(viewModel: MainActivityViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    TapCountTheme {
-        HistoryItemBox(historyInfoUnit = HistoryInfoUnit(54, "June 21, 2024"))
-    }
+//    SettingsUI.AppInfoScreen()
+//    TapCountTheme {
+//        HistoryItemBox(historyInfoUnit = HistoryInfoUnit(54, "June 21, 2024"))
+//    }
 }
 
 @Composable
@@ -280,6 +319,7 @@ fun ItemListDialog(items: List<HistoryInfoUnit>, onDismiss: () -> Unit) {
 fun MyMenu(viewModel: MainActivityViewModel) {
     var showMenu by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
+    var showAppInfoDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -327,6 +367,18 @@ fun MyMenu(viewModel: MainActivityViewModel) {
                         showMenu = false
                         showHistoryDialog = true
                     })
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.app_info_button),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    onClick = {
+                        showMenu = false
+                        showHistoryDialog = false
+                        showAppInfoDialog = true
+                    })
             }
         }
     }
@@ -335,5 +387,9 @@ fun MyMenu(viewModel: MainActivityViewModel) {
         ItemListDialog(items = viewModel.onHistoryClicked(
             context
         ), onDismiss = { showHistoryDialog = false })
+    }
+
+    if (showAppInfoDialog) {
+        SettingsUI.AppInfoScreen()
     }
 }

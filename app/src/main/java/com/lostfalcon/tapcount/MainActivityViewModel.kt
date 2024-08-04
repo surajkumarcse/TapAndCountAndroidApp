@@ -9,6 +9,8 @@ import android.os.Vibrator
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.lostfalcon.tapcount.Notification.NotificationController
+import com.lostfalcon.tapcount.SessionInfo.CentralCountInfo
 import com.lostfalcon.tapcount.SessionInfo.HistoryInfoUnit
 import com.lostfalcon.tapcount.SessionInfo.SessionInfo
 import com.lostfalcon.tapcount.SessionInfo.SessionInfoSerializer
@@ -17,7 +19,7 @@ import java.util.Date
 import java.util.UUID
 
 class MainActivityViewModel : ViewModel() {
-    var count = mutableStateOf(0)
+    var count = CentralCountInfo.count
     lateinit var vibrator: Vibrator
     private val VIBRATION_DURATION = 1000L
     val ANIMATION_DELAY = 20L
@@ -55,6 +57,7 @@ class MainActivityViewModel : ViewModel() {
             count.value--
             doVibrate(context, VibrationEffect.EFFECT_HEAVY_CLICK)
             playTone(ToneGenerator.TONE_SUP_ERROR)
+            doNotify(context)
         }
     }
 
@@ -62,6 +65,7 @@ class MainActivityViewModel : ViewModel() {
         count.value++
         doVibrate(context, VibrationEffect.EFFECT_TICK)
         playTone()
+        doNotify(context)
     }
 
     fun onPause() {
@@ -81,12 +85,8 @@ class MainActivityViewModel : ViewModel() {
 
     fun onHistoryClicked(context: Context): List<HistoryInfoUnit> {
         val historyInfoUnits = retrieveSavedSessionInfo(context)
-        Log.e("surakuma", historyInfoUnits.size.toString())
+        Log.e(LOG_TAG, historyInfoUnits.size.toString())
         return historyInfoUnits
-
-//        historyInfoUnits.forEach {
-//            Log.e("surakuma", it.date.toString() + " " + it.value)
-//        }
     }
 
     fun saveCurrentSessionInfoToDisk(context: Context) {
@@ -103,17 +103,21 @@ class MainActivityViewModel : ViewModel() {
             context
         )
 
-        Log.e("surakuma", "size from previousSessions: ${previousSessions.size}")
+        Log.d(LOG_TAG, "size from previousSessions: ${previousSessions.size}")
 
         previousSessions.forEach {
             val value = it.countValue
             val date = SessionInfoSerializerHelper.getDate(it)
-            Log.e("surakuma", date.toString())
+            Log.d(LOG_TAG, date.toString())
             historyInfoUnits.add(HistoryInfoUnit(value, date))
         }
 
 
         return historyInfoUnits.reversed()
+    }
+
+    fun doNotify(context: Context) {
+        NotificationController.notify(context)
     }
 
     companion object {
