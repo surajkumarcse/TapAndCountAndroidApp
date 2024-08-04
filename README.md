@@ -1,5 +1,5 @@
-This is an Android app that helps you to count people, objects or activity like exercise reps. 
-In this project, repo owner is planning to integrate all the concepts of Android in a single app, till now it has achieved:
+This is an Android app that helps you to count people, objects or activity like exercise reps.  
+In this project, repo owner is planning to integrate all the concepts of Android in a single app, till now it has achieved:  
 Compose  
 Animation  
 MVVM  
