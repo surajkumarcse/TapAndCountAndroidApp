@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -52,6 +53,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.lostfalcon.appinfo.SettingsUI
 import com.lostfalcon.tapcount.SessionInfo.CentralCountInfo
 import com.lostfalcon.tapcount.SessionInfo.HistoryInfoUnit
@@ -71,7 +76,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TapCountTheme {
-                TapAndCountHomeScreen(viewModel)
+                MyApp(viewModel)
             }
         }
 
@@ -117,25 +122,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    override fun onBackPressed() {
-        if (viewModel.isBackPressed.value) {
-            super.onBackPressed()
-            return
-        }
-
-        viewModel.isBackPressed.value = true
-        Toast.makeText(
-            this,
-            this.resources.getText(R.string.back_button_first_tap_message),
-            Toast.LENGTH_SHORT
-        ).show()
-
-        viewModel.viewModelScope.launch {
-            delay(2000)
-            viewModel.isBackPressed.value = false
-        }
-    }
-
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         if(event == null) return super.dispatchKeyEvent(event)
@@ -160,11 +146,56 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TapAndCountHomeScreen(viewModel: MainActivityViewModel) {
+fun MainScreen(navController: NavController, viewModel: MainActivityViewModel) {
+    val context = LocalContext.current
+    BackHandler {
+        if (viewModel.isBackPressed.value) {
+            navController.popBackStack()
+            //return
+        }
+
+        viewModel.isBackPressed.value = true
+        Toast.makeText(
+            context,
+            context.resources.getText(R.string.back_button_first_tap_message),
+            Toast.LENGTH_SHORT
+        ).show()
+
+        viewModel.viewModelScope.launch {
+            delay(2000)
+            viewModel.isBackPressed.value = false
+        }
+    }
+
+    TapAndCountHomeScreen(navController, viewModel)
+}
+
+@Composable
+fun AppInfoScreen(navController: NavController) {
+    SettingsUI.AppInfoScreen(navController)
+}
+
+@Composable
+fun MyApp(viewModel: MainActivityViewModel) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
+        composable(route = Screen.MainScreen.route) {
+            MainScreen(navController, viewModel)
+        }
+
+        composable(route = Screen.AppInfoScreen.route) {
+            AppInfoScreen(navController)
+        }
+    }
+}
+
+@Composable
+fun TapAndCountHomeScreen(navController: NavController, viewModel: MainActivityViewModel) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-        MyMenu(viewModel)
+        MyMenu(navController, viewModel)
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -184,7 +215,7 @@ fun TapAndCountHomeScreen(viewModel: MainActivityViewModel) {
             }
         }
     } else {
-        MyMenu(viewModel)
+        MyMenu(navController, viewModel)
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
@@ -215,7 +246,10 @@ fun TapAndCountHomeScreen(viewModel: MainActivityViewModel) {
 fun GreetingPreview() {
 //    SettingsUI.AppInfoScreen()
 //    TapCountTheme {
-//        HistoryItemBox(historyInfoUnit = HistoryInfoUnit(54, "June 21, 2024"))
+////        HistoryItemBox(historyInfoUnit = HistoryInfoUnit(54, "June 21, 2024"))
+//        SettingsUI.AppInfoScreen(TapCountTheme {
+//
+//        })
 //    }
 }
 
@@ -316,10 +350,9 @@ fun ItemListDialog(items: List<HistoryInfoUnit>, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun MyMenu(viewModel: MainActivityViewModel) {
+fun MyMenu(navController: NavController, viewModel: MainActivityViewModel) {
     var showMenu by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
-    var showAppInfoDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -375,9 +408,7 @@ fun MyMenu(viewModel: MainActivityViewModel) {
                         )
                     },
                     onClick = {
-                        showMenu = false
-                        showHistoryDialog = false
-                        showAppInfoDialog = true
+                        navController.navigate(Screen.AppInfoScreen.route)
                     })
             }
         }
@@ -387,9 +418,5 @@ fun MyMenu(viewModel: MainActivityViewModel) {
         ItemListDialog(items = viewModel.onHistoryClicked(
             context
         ), onDismiss = { showHistoryDialog = false })
-    }
-
-    if (showAppInfoDialog) {
-        SettingsUI.AppInfoScreen()
     }
 }

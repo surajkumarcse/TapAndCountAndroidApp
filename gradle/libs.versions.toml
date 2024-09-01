@@ -13,6 +13,8 @@ appcompat = "1.6.1"
 material = "1.10.0"
 preference = "1.2.0"
 material3Android = "1.2.1"
+navigationVersion = "2.7.3"
+navigationRuntimeKtx = "2.7.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +36,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVersion"}
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
