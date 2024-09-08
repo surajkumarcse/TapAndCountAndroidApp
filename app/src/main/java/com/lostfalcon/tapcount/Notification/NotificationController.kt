@@ -45,7 +45,12 @@ object NotificationController {
         )
         incrementIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIncrementIntent =
-            PendingIntent.getActivity(context, NOTIIFICATION_INCREMENT_CODE, incrementIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(
+                context,
+                NOTIIFICATION_INCREMENT_CODE,
+                incrementIntent,
+               (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
 
         val undoIntent = Intent(
             context,
@@ -57,7 +62,12 @@ object NotificationController {
         )
         undoIntent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         val pendingUndoIntent =
-            PendingIntent.getActivity(context, NOTIFICATION_UNDO_CODE, undoIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(
+                context,
+                NOTIFICATION_UNDO_CODE,
+                undoIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID_APP_STATE_BLUEPRINT)

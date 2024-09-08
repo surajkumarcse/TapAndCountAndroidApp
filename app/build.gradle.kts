@@ -12,8 +12,8 @@ android {
         applicationId = "com.lostfalcon.tapcount"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.20240901.0"
+        versionCode = 20240909
+        versionName = "1.20240909.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
