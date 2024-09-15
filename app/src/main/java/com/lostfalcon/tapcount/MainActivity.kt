@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +84,11 @@ class MainActivity : ComponentActivity() {
         viewModel.doNotify(this)
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.migrateDataFromSharedPrefToDb(this)
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Log.d(LOG_TAG, "$intent")
@@ -123,7 +129,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @SuppressLint("RestrictedApi")
-    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if(event == null) return super.dispatchKeyEvent(event)
         when (event.keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP -> {
@@ -362,6 +368,8 @@ fun ItemListDialog(items: List<HistoryInfoUnit>, onDismiss: () -> Unit) {
 fun MyMenu(navController: NavController, viewModel: MainActivityViewModel) {
     var showMenu by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
+    val historyInfos by viewModel.previousSessions.collectAsState()
+
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -408,6 +416,7 @@ fun MyMenu(navController: NavController, viewModel: MainActivityViewModel) {
                     onClick = {
                         showMenu = false
                         showHistoryDialog = true
+                        viewModel.onHistoryClicked(context)
                     })
                 DropdownMenuItem(
                     text = {
@@ -424,8 +433,9 @@ fun MyMenu(navController: NavController, viewModel: MainActivityViewModel) {
     }
 
     if (showHistoryDialog) {
-        ItemListDialog(items = viewModel.onHistoryClicked(
-            context
-        ), onDismiss = { showHistoryDialog = false })
+        ItemListDialog(
+            items = historyInfos,
+            onDismiss = { showHistoryDialog = false }
+        )
     }
 }

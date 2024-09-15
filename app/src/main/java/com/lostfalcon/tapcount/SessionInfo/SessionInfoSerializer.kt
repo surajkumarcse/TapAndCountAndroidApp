@@ -7,6 +7,7 @@ import com.lostfalcon.tapcount.Util.Constants.SESSIONS_KEY
 
 class SessionInfoSerializer {
     companion object {
+        @Deprecated("try to save in DB")
         fun saveSession(context: Context, sessionInfo: SessionInfo) {
             val sharedPref: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_KEY, Context.MODE_PRIVATE)
             val existingSessionsJson = sharedPref.getString(SESSIONS_KEY, "[]")
@@ -19,10 +20,16 @@ class SessionInfoSerializer {
             }
         }
 
-        fun getSessions(context: Context): List<SessionInfo> {
+        @Deprecated("try to get the Sessions from DB")
+        fun getSessionsFromSharedPref(context: Context): List<SessionInfo> {
             val sharedPref: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_KEY, Context.MODE_PRIVATE)
             val sessionsJson = sharedPref.getString(SESSIONS_KEY, "[]")
             return SessionInfoSerializerHelper.fromJsonList(sessionsJson ?: "[]")
+        }
+
+        fun clearSharedPrefs(context: Context) {
+            val sharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_KEY, Context.MODE_PRIVATE)
+            sharedPreferences.edit().clear().apply()
         }
     }
 }

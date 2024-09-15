@@ -3,6 +3,7 @@ package com.lostfalcon.tapcount.SessionInfo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -20,8 +21,7 @@ class SessionInfoSerializerHelper {
         fun fromJsonList(jsonString: String): List<SessionInfo> = json.decodeFromString<List<SessionInfo>>(jsonString)
 
         // it might throw exception, handle it
-        fun getDate(sessionInfo: SessionInfo) : String {
-            val dateTime = sessionInfo.dateTime
+        fun getDate(dateTime: String) : String {
 
             // Define the input date format
             val inputDateFormat = SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.US)
