@@ -8,4 +8,6 @@
     <string name="history_button_description">History</string>
     <string name="app_info_button">App Info</string>
     <string name="notification_text_holder">Current count: </string>
+    <string name="no_save_history_message">Try to do reset to save your history here!</string>
+    <string name="close">Close</string>
 </resources>

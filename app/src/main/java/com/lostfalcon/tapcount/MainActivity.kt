@@ -336,13 +336,22 @@ fun ItemListDialog(items: List<HistoryInfoUnit>, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Close") // todo: surakuma take it from outside
+                Text(stringResource(id = R.string.close))
             }
         },
         text = {
-            LazyColumn {
-                items(items.size) { index ->
-                    HistoryItemBox(items[index])
+            if(items.size == 0) {
+                Text(
+                    text = stringResource(id = R.string.no_save_history_message),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                LazyColumn {
+                    items(items.size) { index ->
+                        HistoryItemBox(items[index])
+                    }
                 }
             }
         }
