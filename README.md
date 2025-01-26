@@ -3,7 +3,7 @@ In this project, repo owner is planning to integrate all the concepts of Android
 Compose  
 Animation  
 MVVM  
-Notification
+Notification  
 RoomDB
 
 Ditch the old clicker! Replace your clunky tally counter with this intuitive, modern app designed for easy counting on the go. 
