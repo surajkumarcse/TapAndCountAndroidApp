@@ -49,6 +49,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    testOptions {
+        // This is needed because when you do unit test for a function and that function
+        // uses internal android framework, then the test will fail. By setting this to true,
+        // it will try to return default values for those android framework calls like null or 0.
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
