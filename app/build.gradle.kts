@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "com.lostfalcon.tapcount"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.lostfalcon.tapcount"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 20240915
-        versionName = "1.20240915.0"
+        targetSdk = 36
+        versionCode = 20260131
+        versionName = "1.20260131.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
